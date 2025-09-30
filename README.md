@@ -17,6 +17,7 @@
 
 ## 📁 폴더 트리 구조
 
+```
 src
 ├── assets # 이미지, 폰트 등 정적 리소스
 ├── components # 재사용 가능한 UI 컴포넌트
@@ -25,8 +26,8 @@ src
 ├── routes # 라우터 설정 및 페이지 경로 정의
 ├── services # API 통신 및 인증 관련 로직
 ├── types # TypeScript 타입 정의
-└── utils # 공통 함수 및 유틸리티
-
+└── utils # 공통 함수 및 유틸리티 
+```
 
 ## 📖 폴더 설명
 
