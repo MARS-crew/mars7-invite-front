@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
-import { ChatBotProfile } from '../components/ChatBot'
 import Home from '../page/Home'
+import BotChatPage from '../page/testChat/BotChatPage'
 
 export const router = createBrowserRouter([
   {
@@ -9,7 +9,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/chat',
-    element: <ChatBotProfile />,
+    element: <BotChatPage />,
   },
 ])
 
