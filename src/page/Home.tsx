@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChatBotProfile } from "../components/ChatBot";
 import MyChatArea from "../components/MyChatArea";
 import { TopBar } from "../components/TopBar";
+import { ResultChatBack, ResultChatFront, ResultChatAI, ReesultChatDesigner, ResultChatPlanner } from "../components/ResultChat";
 import { Selection } from "../utils/selectList";
 import InputArea from "../components/InputArea";
 
@@ -132,26 +133,39 @@ function Home() {
         showNextQuestion(nextIndex);
       }, 800);
     } else {
-      // 모든 질문이 끝났을 때 콘솔에 결과 출력 및 최다 직군 계산
+      // 모든 질문이 끝났을 때 결과 계산 후 결과 메시지 추가
       setTimeout(() => {
         const finalAnswers = [...userAnswers, selectedAnswer];
+
+        const finalScores: Record<string, number> = { ...roleScores };
+        const roles = rolesForThisQuestion ? rolesForThisQuestion.split(',').map(r => r.trim()) : [];
+        roles.forEach(r => {
+          finalScores[r] = (finalScores[r] ?? 0) + 1;
+        });
+
+        const sorted = Object.entries(finalScores).sort((a, b) => b[1] - a[1]);
+        const topRole = sorted[0]?.[0] ?? "결과 없음";
+
         console.log("=== 마스외전 포지션 테스트 결과 ===");
         console.log("선택한 답변들:");
         finalAnswers.forEach((answer, index) => {
           console.log(`질문 ${index + 1}: ${answer}`);
         });
-        // 최종 직군 점수 및 최다 직군
-        const entries = Object.entries(roleScores).map(([k, v]) => [k, v] as const);
-        const updatedEntries = (() => {
-          const roles = rolesForThisQuestion ? rolesForThisQuestion.split(',').map(r => r.trim()) : [];
-          const map = new Map(entries);
-          roles.forEach(r => map.set(r, (map.get(r) ?? 0) + 1));
-          return Array.from(map.entries());
-        })();
-        const sorted = updatedEntries.sort((a,b) => b[1]-a[1]);
-        console.log("직군 점수:", Object.fromEntries(updatedEntries));
-        console.log("가장 적합한 직군:", sorted[0][0], `(점수 ${sorted[0][1]})`);
+        console.log("직군 점수:", finalScores);
+        console.log("가장 적합한 직군:", topRole, `(점수 ${sorted[0]?.[1] ?? 0})`);
         console.log("========================");
+
+        const resultMessage: ChatMessage = {
+          id: `result`,
+          content: topRole,
+          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+          isBot: true,
+          isTyping: false,
+          sendType: 'result',
+          question: '결과'
+        };
+
+        setMessages(prev => [...prev, resultMessage]);
       }, 1000);
     }
   };
@@ -163,16 +177,37 @@ function Home() {
         {messages.map((message) => (
           <div key={message.id} className={message.isBot ? "flex justify-start mb-4" : "flex justify-end mb-4"}>
             {message.isBot ? (
-              <ChatBotProfile 
-                message={message.content}
-                messageTitle={message.question}
-                timestamp={message.timestamp}
-                isTyping={message.isTyping}
-                sendType={message.sendType}
-                options={message.options}
-                onSelect={message.sendType === "select" ? handleAnswerSelect : undefined}
-                isDisabled={message.sendType === "select" && answeredQuestions.has(message.id)}
-              />
+              message.sendType === 'result' ? (
+                // 결과에 따라 맞는 컴포넌트 렌더링
+                (message.content === '백엔드' || message.content === '백엔드 개발자') ? (
+                  <ResultChatBack />
+                ) : (message.content === '프론트엔드' || message.content === '프론트엔드 개발자') ? (
+                  <ResultChatFront />
+                ) : (message.content === 'AI 개발자' || message.content === 'AI') ? (
+                  <ResultChatAI />
+                ) : (message.content === '디자이너') ? (
+                  <ReesultChatDesigner />
+                ) : (message.content === '기획자') ? (
+                  <ResultChatPlanner />
+                ) : (
+                  <ChatBotProfile 
+                    message={message.content}
+                    messageTitle={message.question}
+                    timestamp={message.timestamp}
+                  />
+                )
+              ) : (
+                <ChatBotProfile 
+                  message={message.content}
+                  messageTitle={message.question}
+                  timestamp={message.timestamp}
+                  isTyping={message.isTyping}
+                  sendType={message.sendType}
+                  options={message.options}
+                  onSelect={message.sendType === "select" ? handleAnswerSelect : undefined}
+                  isDisabled={message.sendType === "select" && answeredQuestions.has(message.id)}
+                />
+              )
             ) : (
               <MyChatArea chatContent={message.content} />
             )}
