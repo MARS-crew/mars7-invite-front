@@ -4,6 +4,7 @@ import TextArea from "../../components/form/TextArea";
 import TopBar from "../../components/form/TopBar";
 import PrivacyConsent from "../../components/form/PrivacyConsent";
 import { useNavigate } from "react-router-dom";
+import LongButton from "../../components/button/LongButton";
 
 const ApplicationForm = () => {
   const navigate = useNavigate();
@@ -20,14 +21,10 @@ const ApplicationForm = () => {
         <TextArea />
         <PrivacyConsent />
 
-        <button
-          onClick={() => {
-            navigate("/submit");
-          }}
-          className="w-full h-[51px] mt-[95px] rounded-[10px] bg-[#4173FF] text-white font-bold drop-shadow-[0_1px_3px_rgba(0,21,104,0.37)]"
-        >
-          제출하기
-        </button>
+        <LongButton
+          text="제출하기"
+          onClickHandler={() => navigate("/submit")}
+        />
       </div>
     </div>
   );
