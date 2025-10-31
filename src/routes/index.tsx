@@ -1,18 +1,21 @@
-import { createBrowserRouter } from 'react-router-dom'
-import Home from '../page/Home'
-import BotChatPage from '../page/testChat/BotChatPage'
+import { createBrowserRouter } from "react-router-dom";
+import Home from "../page/Home";
+import BotChatPage from "../page/testChat/BotChatPage";
+import ApplicationForm from "../page/form/ApplicationForm";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Home />,
   },
   {
-    path: '/chat',
+    path: "/chat",
     element: <BotChatPage />,
   },
-])
+  {
+    path: "/form",
+    element: <ApplicationForm />,
+  },
+]);
 
-export default router
-
-
+export default router;
