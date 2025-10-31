@@ -19,7 +19,7 @@ const TextArea = () => {
       </div>
       <textarea
         onChange={onChange}
-        className="w-full h-56 rounded-[10px] p-4 border border-[#dddddd]"
+        className="w-full h-56 rounded-[10px] p-4 border border-[#dddddd] resize-none bg-white"
         maxLength={500}
       />
     </div>
