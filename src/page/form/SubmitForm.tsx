@@ -1,9 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import white from "../../assets/icon/check/white.png";
 import progress from "../../assets/progress.png";
+import LongButton from "../../components/button/LongButton";
 
 const SubmitForm = () => {
+  const navigate = useNavigate();
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center h-screen px-4">
       <div className="rounded-full bg-[#4173FF] w-[49px] h-[49px] flex items-center justify-center">
         <img src={white} width={21.3} height={12.78} />
       </div>
@@ -16,7 +19,7 @@ const SubmitForm = () => {
         지원해 주셔서 감사합니다.
       </div>
       <img src={progress} width={277} height={68} />
-      <div className="mt-[78px]">
+      <div className="mt-[78px] mb-[66px]">
         <div className="mb-3 ml-px font-bold">요약 정보</div>
         <div className="w-[335px] h-[162px] border border-[#DDDDDD] rounded-[10px]">
           <div className="h-[54px] flex justify-between px-4 items-center">
@@ -35,6 +38,10 @@ const SubmitForm = () => {
           </div>
         </div>
       </div>
+      <LongButton
+        text="처음으로 돌아가기"
+        onClickHandler={() => navigate("/chat")}
+      />
     </div>
   );
 };
