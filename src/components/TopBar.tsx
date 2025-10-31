@@ -2,7 +2,7 @@ import Robot from '../assets/Robot.png';
 
 export const TopBar = () =>  {
     return (
-        <div className="flex items-center gap-3 h-[72px] w-full px-4 bg-white border-b border-[#E5E5E5] mb-9">
+        <div className="flex items-center gap-3 h-[72px] w-full px-4 bg-white border-b border-[#E5E5E5]">
           {/* 아이콘 박스 */}
           <div className="grid place-items-center w-11 h-11 rounded-2xl bg-[#4173FF] shadow-[0_1px_6px_rgba(0,40,150,0.47)]">
             <img src={Robot} alt="Robot" className="w-7 h-7" />

@@ -53,7 +53,7 @@ export const ChatBotProfile = ({
       <div className="flex-1">
         <span className="text-sm font-medium text-gray-700">마외 봇</span>
         <div className='flex mt-1'>
-          <div className="relative w-full rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_0_2px_rgba(0,0,0,0.25)] inline-block">
+          <div className="relative w-full rounded-2xl border border-neutral-200 bg-white p-4 drop-shadow-[0_0_2px_[#00000040]] inline-block">
             {sendType === "select" ? (
                 <div className="flex flex-col gap-3 w-full max-w-md">
                 <p className="text-[16px] font-medium mb-1">
@@ -69,10 +69,10 @@ export const ChatBotProfile = ({
                       }
                     }}
                     disabled={isDisabled}
-                    className={`w-full border rounded-xl p-4 text-[15px] transition-all duration-200 
+                    className={`w-full border rounded-xl p-4 text-sm transition-all duration-200 
                       ${
                         selected === idx
-                          ? "bg-[#FFFFFF] border-[#4173FF] text-black shadow-[0_0_0_2px_#4173FF40]"
+                          ? "bg-[#4173FF]/[0.08] border-[#4173FF] text-black drop-shadow-[0_0_0_2px_[#4173FF40]] font-semibold"
                           : "border-neutral-200 text-[#000000] hover:bg-[#FFFFFF]"
                       }`}
                   >
@@ -81,11 +81,11 @@ export const ChatBotProfile = ({
                 ))}
               </div>
             ) : (
-                isTyping ? <TypingWaveDots /> : formatMessage(message)
+                isTyping ? <TypingWaveDots /> : <div className="font-normal text-base">{formatMessage(message)}</div>
             )}
           </div>
           <div className='ml-2 self-end'>
-            <span className="text-[11px] text-gray-400">{timestamp}</span>
+            <span className="text-xs text-gray-400">{timestamp}</span>
           </div>
         </div>
       </div>
