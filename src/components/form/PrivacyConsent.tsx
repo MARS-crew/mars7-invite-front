@@ -19,9 +19,9 @@ const PrivacyConsent = () => {
 
       <div className="w-full rounded-[10px]">
         <div
-          className={`rounded-t-[10px] flex items-center bg-[${
-            checked ? "#4173FF" : "#dddddd"
-          }] h-[65px] px-3.5`}
+          className={`rounded-t-[10px] flex items-center ${
+            checked ? "bg-[#4173FF]" : "bg-[#DDDDDD]"
+          } h-[65px] px-3.5`}
         >
           <div
             onClick={() => setChecked(!checked)}

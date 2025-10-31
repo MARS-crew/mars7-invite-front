@@ -1,11 +1,13 @@
-import { useState } from "react";
 import FormInput from "../../components/form/FormInput";
 import PositionSelect from "../../components/form/PositionSelect";
 import TextArea from "../../components/form/TextArea";
 import TopBar from "../../components/form/TopBar";
 import PrivacyConsent from "../../components/form/PrivacyConsent";
+import { useNavigate } from "react-router-dom";
 
 const ApplicationForm = () => {
+  const navigate = useNavigate();
+
   return (
     <div>
       <TopBar />
@@ -18,7 +20,12 @@ const ApplicationForm = () => {
         <TextArea />
         <PrivacyConsent />
 
-        <button className="w-full h-[51px] mt-[95px] rounded-[10px] bg-[#4173FF] text-white font-bold drop-shadow-[0_1px_3px_rgba(0,21,104,0.37)]">
+        <button
+          onClick={() => {
+            navigate("/submit");
+          }}
+          className="w-full h-[51px] mt-[95px] rounded-[10px] bg-[#4173FF] text-white font-bold drop-shadow-[0_1px_3px_rgba(0,21,104,0.37)]"
+        >
           제출하기
         </button>
       </div>
