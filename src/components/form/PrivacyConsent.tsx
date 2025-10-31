@@ -11,7 +11,7 @@ const PrivacyConsent = () => {
   const [checked, setChecked] = useState<boolean>(false);
 
   return (
-    <div className="mb-[95px] w-[361px]">
+    <div className="mb-[95px] max-w-[400px]">
       <div className="flex items-end mb-2">
         <div className="font-bold">개인정보 동의서</div>
         <div className="text-[#4173FF] font-medium mb-0.5 ml-0.5">*</div>
