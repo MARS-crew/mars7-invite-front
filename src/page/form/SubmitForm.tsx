@@ -33,7 +33,7 @@ const SubmitForm = () => {
           </div>
           <hr className="border-[#DCDADA] w-[312px] h-px m-auto" />
           <div className="h-[54px] flex justify-between px-4 items-center">
-            <div className="font-bold text-[#626262]">전회번호</div>
+            <div className="font-bold text-[#626262]">전화번호</div>
             <div className="font-semibold">010 7132 8582</div>
           </div>
         </div>
