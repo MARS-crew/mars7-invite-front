@@ -156,9 +156,18 @@ function BotChatPage() {
     }
   };
 
+  const formatted = new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+    .format(new Date())
+    .replace(/-/g, '.');
+
   return (
     <div className="h-screen w-full bg-[#FFFFFF] flex flex-col">
       <TopBar />
+      <span className="self-center py-[10px] text-xs text-[#A6A6A6]">{formatted}</span>
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 pt-0 pb-40">
         {messages.map((message) => (
           <div key={message.id} className={message.isBot ? "flex justify-start mb-4" : "flex justify-end mb-4"}>
