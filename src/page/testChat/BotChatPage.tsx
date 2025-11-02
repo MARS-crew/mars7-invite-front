@@ -50,7 +50,7 @@ function BotChatPage() {
           포지션부터 찾아보자.
           준비됐지?
           부담 없이 하나씩 선택해줘!`,
-        timestamp:  new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+        timestamp:  new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
         isBot: true,
         isTyping: false,
         question: ""
@@ -81,7 +81,7 @@ function BotChatPage() {
       const questionMessage: ChatMessage = {
         id: `question-${index}`,
         content: question.question,
-        timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+        timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
         isBot: true,
         isTyping: false,
         sendType: "select",
