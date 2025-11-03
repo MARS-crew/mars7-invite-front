@@ -28,7 +28,7 @@ export const Selection = [
         "기획자",
         "디자이너",
         "프론트엔드,백엔드",
-        "AI 개발자"
+        "AI 엔지니어"
       ]
     },
     {
@@ -44,7 +44,7 @@ export const Selection = [
         "백엔드",
         "프론트엔드",
         "디자이너",
-        "AI 개발자"
+        "AI 엔지니어"
       ]
     },
     {
@@ -60,7 +60,7 @@ export const Selection = [
         "기획자",
         "디자이너",
         "프론트엔드,백엔드",
-        "AI 개발자"
+        "AI 엔지니어"
       ]
     },
     {
@@ -76,7 +76,7 @@ export const Selection = [
         "백엔드",
         "디자이너",
         "프론트엔드",
-        "AI 개발자"
+        "AI 엔지니어"
       ]
     },
     {
@@ -94,7 +94,7 @@ export const Selection = [
         "프론트엔드",
         "기획자",
         "백엔드",
-        "AI 개발자"
+        "AI 엔지니어"
       ]
     },
     {
@@ -112,7 +112,7 @@ export const Selection = [
         "디자이너",
         "프론트엔드",
         "백엔드",
-        "AI 개발자"
+        "AI 엔지니어"
       ]
     },
     {
@@ -130,7 +130,7 @@ export const Selection = [
         "디자이너",
         "프론트엔드",
         "백엔드",
-        "AI 개발자"
+        "AI 엔지니어"
       ]
     },
     {
@@ -148,7 +148,7 @@ export const Selection = [
         "디자이너",
         "프론트엔드",
         "백엔드",
-        "AI 개발자"
+        "AI 엔지니어"
       ]
     },
     {
@@ -166,7 +166,7 @@ export const Selection = [
         "디자이너",
         "프론트엔드",
         "백엔드",
-        "AI 개발자"
+        "AI 엔지니어"
       ]
     }
   ]

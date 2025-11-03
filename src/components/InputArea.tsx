@@ -5,11 +5,12 @@ export default function InputArea() {
         <div className="w-full p-4 pb-6">
             <div className="flex gap-2 items-center max-w-4xl mx-auto">
                 <input 
-                    className="flex-1 h-12 border border-gray-300 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                    className="flex-1 h-14 border-[0.5px] border-[#D9D9D9] px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                    style={{ boxShadow: '0px 1px 3px 1px rgba(162, 162, 162, 0.22)' }}
                     placeholder="마스외전에 관해서 물어보세요." 
                 />
-                <button className="h-12 w-12 bg-[#4173FF] rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
-                    <img src={Send} className="h-6 w-6" alt="Send" />
+                <button className="h-14 w-14 bg-[#4173FF] rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                    <img src={Send} className="h-8 w-8" alt="Send" />
                 </button>
             </div>
             <div className="text-center mt-2">
