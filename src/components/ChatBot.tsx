@@ -1,11 +1,10 @@
-
-import { useState } from 'react';
-import Robot from '../assets/Robot.png';
-import { TypingWaveDots } from './Loding';
+import { useState } from "react";
+import Robot from "../assets/Robot.png";
+import { TypingWaveDots } from "./Loding";
 
 interface ChatBotProfileProps {
   message?: string;
-  messageTitle? : string;
+  messageTitle?: string;
   timestamp?: string;
   isTyping?: boolean;
   className?: string;
@@ -19,29 +18,30 @@ interface ChatBotProfileProps {
   onLearnMoreClick?: () => void;
   showInterestOptions?: boolean;
   onInterestSelect?: (option: string, index: number) => void;
+  onSkip: () => void;
 }
 
 const defaultOptions = [
-    "아늑하고 예쁜 분위기, 인테리어 감성",
-    "편하게 사용할 수 있는 실용성 중심",
-    "방 구조나 수납 공간 효율성 고민",
-    "스마트 기기나 최신 기술 활용 관심",
-  ];
+  "아늑하고 예쁜 분위기, 인테리어 감성",
+  "편하게 사용할 수 있는 실용성 중심",
+  "방 구조나 수납 공간 효율성 고민",
+  "스마트 기기나 최신 기술 활용 관심",
+];
 
 // 줄바꿈을 처리하는 함수
 const formatMessage = (message: string) => {
-  return message.split('\n').map((line, index) => (
+  return message.split("\n").map((line, index) => (
     <span key={index}>
       {line}
-      {index < message.split('\n').length - 1 && <br />}
+      {index < message.split("\n").length - 1 && <br />}
     </span>
   ));
 };
 
-export const ChatBotProfile = ({ 
-  message = "안녕하세요! 무엇을 도와드릴까요?", 
+export const ChatBotProfile = ({
+  message = "안녕하세요! 무엇을 도와드릴까요?",
   messageTitle = "",
-  timestamp = "11:30", 
+  timestamp = "11:30",
   isTyping = false,
   className = "",
   sendType = "chat",
@@ -54,24 +54,23 @@ export const ChatBotProfile = ({
   onLearnMoreClick,
   showInterestOptions = false,
   onInterestSelect,
+  onSkip,
 }: ChatBotProfileProps) => {
-    const [selected, setSelected] = useState<number | null>(null);
-    const [selectedInterest, setSelectedInterest] = useState<number | null>(null);
-    
+  const [selected, setSelected] = useState<number | null>(null);
+  const [selectedInterest, setSelectedInterest] = useState<number | null>(null);
+
   return (
     <div className={`flex ${className}`}>
-      <div className='bg-[#4173FF] w-11 h-11 flex items-center justify-center rounded-full mr-2'>
+      <div className="bg-[#4173FF] w-11 h-11 flex items-center justify-center rounded-full mr-2">
         <img src={Robot} alt="Robot" className="w-7 h-7" />
       </div>
       <div className="flex-1">
         <span className="text-sm font-medium text-gray-700">마외 봇</span>
-        <div className='flex mt-1'>
+        <div className="flex mt-1">
           <div className="relative w-full rounded-2xl border border-neutral-200 bg-white p-4 drop-shadow-[0_0_2px_[#00000040]] inline-block">
             {sendType === "select" ? (
-                <div className="flex flex-col gap-3 w-full max-w-md">
-                <p className="text-[16px] font-medium mb-1">
-                  {messageTitle}
-                </p>
+              <div className="flex flex-col gap-3 w-full max-w-md">
+                <p className="text-[16px] font-medium mb-1">{messageTitle}</p>
                 {options.map((text, idx) => (
                   <button
                     key={idx}
@@ -95,12 +94,20 @@ export const ChatBotProfile = ({
               </div>
             ) : resultImage ? (
               <div className="flex flex-col items-center gap-3">
-                <img src={resultImage} alt={resultRole} className="w-full max-w-[200px] object-contain" />
-                <div className="font-normal text-base text-center">{formatMessage(message)}</div>
+                <img
+                  src={resultImage}
+                  alt={resultRole}
+                  className="w-full max-w-[200px] object-contain"
+                />
+                <div className="font-normal text-base text-center">
+                  {formatMessage(message)}
+                </div>
               </div>
             ) : showLearnMore ? (
               <div className="flex flex-col gap-3">
-                <div className="font-normal text-base">{formatMessage(message)}</div>
+                <div className="font-normal text-base">
+                  {formatMessage(message)}
+                </div>
                 {showInterestOptions ? (
                   <div className="flex gap-3 w-full max-w-md">
                     {["응!", "겠냐?"].map((text, idx) => (
@@ -127,20 +134,38 @@ export const ChatBotProfile = ({
                     ))}
                   </div>
                 ) : (
-                  <button 
+                  <button
                     onClick={onLearnMoreClick}
                     className="flex items-center justify-center gap-2 bg-[#4173FF] text-white px-4 h-12 rounded-lg hover:bg-[#4173FF]/90 transition-colors"
                   >
-                    <span className="text-sm font-medium">마스외전 알아보기</span>
-                    <img src="/search.svg" alt="search" className="w-3.5 h-3.5" />
+                    <span className="text-sm font-medium">
+                      마스외전 알아보기
+                    </span>
+                    <img
+                      src="/search.svg"
+                      alt="search"
+                      className="w-3.5 h-3.5"
+                    />
                   </button>
                 )}
               </div>
+            ) : isTyping ? (
+              <TypingWaveDots />
             ) : (
-                isTyping ? <TypingWaveDots /> : <div className="font-normal text-base">{formatMessage(message)}</div>
+              <div className="font-normal text-base">
+                {formatMessage(message)}
+                {message.includes("자기소개") && (
+                  <button
+                    onClick={onSkip}
+                    className="flex items-center justify-center gap-2 bg-[#4173FF] text-white px-4 w-full h-12 mt-[25px] rounded-lg hover:bg-[#4173FF]/90 transition-colors"
+                  >
+                    건너뛰기
+                  </button>
+                )}
+              </div>
             )}
           </div>
-          <div className='ml-2 self-end'>
+          <div className="ml-2 self-end">
             <span className="text-xs text-gray-400">{timestamp}</span>
           </div>
         </div>
