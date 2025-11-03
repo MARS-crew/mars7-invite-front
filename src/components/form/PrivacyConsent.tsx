@@ -6,9 +6,13 @@ import lightGray from "../../assets/icon/check/lightGray.png";
 import blue from "../../assets/icon/check/blue.png";
 import white from "../../assets/icon/check/white.png";
 
-const PrivacyConsent = () => {
+interface PrivacyConsentProps {
+  data: boolean;
+  agreePrivacy: () => void;
+}
+
+const PrivacyConsent = ({ data, agreePrivacy }: PrivacyConsentProps) => {
   const [modal, setModal] = useState<boolean>(false);
-  const [checked, setChecked] = useState<boolean>(false);
 
   return (
     <div className="mb-[95px] max-w-[400px]">
@@ -20,21 +24,19 @@ const PrivacyConsent = () => {
       <div className="w-full rounded-[10px]">
         <div
           className={`rounded-t-[10px] flex items-center ${
-            checked ? "bg-[#4173FF]" : "bg-[#DDDDDD]"
+            data ? "bg-[#4173FF]" : "bg-[#DDDDDD]"
           } h-[65px] px-3.5`}
         >
           <div
-            onClick={() => setChecked(!checked)}
+            onClick={agreePrivacy}
             className={`rounded-full w-5 h-5 border ${
-              checked ? "border-white" : "border-[#919191]"
+              data ? "border-white" : "border-[#919191]"
             }  flex items-center justify-center`}
           >
-            <img width={8.7} height={5.22} src={checked ? white : gray} />
+            <img width={8.7} height={5.22} src={data ? white : gray} />
           </div>
           <div
-            className={`font-bold ml-[11px] text-${
-              checked ? "white" : "black"
-            }`}
+            className={`font-bold ml-[11px] text-${data ? "white" : "black"}`}
           >
             전체동의
           </div>
@@ -45,15 +47,15 @@ const PrivacyConsent = () => {
             <div className="flex items-center justify-between mt-[21px]">
               <div className="flex items-center">
                 <div
-                  onClick={() => setChecked(!checked)}
+                  onClick={agreePrivacy}
                   className={`rounded-full w-5 h-5 border ${
-                    checked ? "border-[#4173FF]" : "border-[#cfcfcf]"
+                    data ? "border-[#4173FF]" : "border-[#cfcfcf]"
                   }  flex items-center justify-center`}
                 >
                   <img
                     width={8.7}
                     height={5.22}
-                    src={checked ? blue : lightGray}
+                    src={data ? blue : lightGray}
                   />
                 </div>
                 <div className="ml-[11px] text-[#676767]">
@@ -83,16 +85,12 @@ const PrivacyConsent = () => {
           >
             <div className="flex items-center">
               <div
-                onClick={() => setChecked(!checked)}
+                onClick={agreePrivacy}
                 className={`rounded-full w-5 h-5 border ${
-                  checked ? "border-[#4173FF]" : "border-[#cfcfcf]"
+                  data ? "border-[#4173FF]" : "border-[#cfcfcf]"
                 }  flex items-center justify-center`}
               >
-                <img
-                  width={8.7}
-                  height={5.22}
-                  src={checked ? blue : lightGray}
-                />
+                <img width={8.7} height={5.22} src={data ? blue : lightGray} />
               </div>
               <div className="ml-[11px] text-[#676767]">
                 개인정보 수집 및 이용 동의

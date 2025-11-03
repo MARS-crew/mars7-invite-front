@@ -1,14 +1,10 @@
-import { useState } from "react";
+interface TextAreaProps {
+  text: string;
+  name: string;
+  onChange: (e: any) => void;
+}
 
-const TextArea = () => {
-  const [text, setText] = useState<string>("");
-
-  const onChange = (e: any) => {
-    const value = e.target.value;
-    if (value.length <= 500) {
-      setText(value);
-    }
-  };
+const TextArea = ({ text, name, onChange }: TextAreaProps) => {
   return (
     <div className="mb-[18px]">
       <div className="flex justify-between mb-2">
@@ -18,6 +14,8 @@ const TextArea = () => {
         </div>
       </div>
       <textarea
+        name={name}
+        value={text}
         onChange={onChange}
         className="w-full h-56 rounded-[10px] p-4 border border-[#dddddd] resize-none bg-white"
         maxLength={500}
