@@ -4,7 +4,8 @@ import MyChatArea from "../../components/MyChatArea";
 import { TopBar } from "../../components/TopBar";
 import { Selection } from "../../utils/selectList";
 import InputArea from "../../components/InputArea";
-import { getRoleImage, getRoleDetailMessage, getResultMessage, INTRO_MESSAGE, SELF_INTRO_REQUEST_MESSAGE } from "../../utils/roleMessages";
+import { getRoleImage, getRoleDetailMessage, getResultMessage, INTRO_MESSAGE, SELF_INTRO_REQUEST_MESSAGE } from "../../constants/roleMessages";
+import { TIMING } from "../../constants/chatConstants";
 
 interface ChatMessage {
   question: string;
@@ -24,7 +25,7 @@ interface ChatMessage {
 function BotChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [_userAnswers, setUserAnswers] = useState<string[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<string>>(new Set());
   const [roleScores, setRoleScores] = useState<Record<string, number>>({
@@ -46,34 +47,63 @@ function BotChatPage() {
   // 초기 인사 메시지 설정
   useEffect(() => {
     if (!isInitialized) {
-      const welcomeMessage: ChatMessage = {
-        id: "welcome",
-        content: `안녕!
+      // 로딩 메시지 먼저 표시
+      const loadingMessage: ChatMessage = {
+        id: "loading-welcome",
+        content: "",
+        timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        isBot: true,
+        isTyping: true,
+        question: ""
+      };
+
+      setMessages([loadingMessage]);
+      
+      // 1초 후 인사 메시지로 교체
+      const timeoutId = setTimeout(() => {
+        const welcomeMessage: ChatMessage = {
+          id: "welcome",
+          content: `안녕!
           나는 마스외전 챗봇 피츄⚡️
 
           먼저 미니 테스트로 너와 잘 맞는
           포지션부터 찾아보자.
           준비됐지?
           부담 없이 하나씩 선택해줘!`,
-        timestamp:  new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
-        isBot: true,
-        isTyping: false,
-        question: ""
-      };
-      
-      setMessages([welcomeMessage]);
-      setIsInitialized(true);
+          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+          isBot: true,
+          isTyping: false,
+          question: ""
+        };
+
+        setMessages(prev => {
+          // 이미 welcome 메시지가 있으면 추가하지 않음
+          if (prev.some(msg => msg.id === "welcome")) {
+            return prev;
+          }
+          return prev.filter(msg => msg.id !== "loading-welcome").concat(welcomeMessage);
+        });
+        
+        setIsInitialized(true);
+      }, TIMING.DEFAULT_DELAY);
+
+      return () => clearTimeout(timeoutId);
     }
   }, [isInitialized]);
 
   // 첫 번째 질문 표시
   useEffect(() => {
-    if (isInitialized && currentQuestionIndex === 0 && messages.length === 1) {
-      setTimeout(() => {
+    const hasWelcomeMessage = messages.some(msg => msg.id === "welcome");
+    const hasQuestion = messages.some(msg => msg.id?.startsWith("question-"));
+    
+    if (isInitialized && currentQuestionIndex === 0 && hasWelcomeMessage && !hasQuestion && messages.length === 1) {
+      const timeoutId = setTimeout(() => {
         showNextQuestion(0);
-      }, 2000); //2초 뒤에 표시
+      }, TIMING.DEFAULT_DELAY);
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [isInitialized, currentQuestionIndex, messages.length]);
+  }, [isInitialized, currentQuestionIndex, messages]);
 
   // 메시지가 추가될 때마다 스크롤을 하단으로 이동
   useEffect(() => {
@@ -93,36 +123,62 @@ function BotChatPage() {
         options: question.options,
         question: question.question
       };
-      
+
       setMessages(prev => [...prev, questionMessage]);
     }
   };
 
   const handleLearnMoreClick = (messageId: string) => {
-    // 마스외전 소개 메시지
-    const introMessage: ChatMessage = {
-      id: `intro-${Date.now()}`,
-      content: INTRO_MESSAGE,
+    // 사용자 메시지 추가
+    const userMessage: ChatMessage = {
+      id: `learn-more-${Date.now()}`,
+      content: "마스외전 알아보기",
       timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
-      isBot: true,
+      isBot: false,
       isTyping: false,
-      question: "",
-      showLearnMore: true,
-      showInterestOptions: true
+      question: ""
     };
-    
-    setMessages(prev => prev.map(msg => 
-      msg.id === messageId 
+
+    setMessages(prev => prev.map(msg =>
+      msg.id === messageId
         ? { ...msg, showLearnMore: true, showInterestOptions: false }
         : msg
     ));
-    
+
+    setMessages(prev => [...prev, userMessage]);
+
+    // 로딩 메시지 표시
+    const loadingMessage: ChatMessage = {
+      id: `loading-intro-${Date.now()}`,
+      content: "",
+      timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+      isBot: true,
+      isTyping: true,
+      question: ""
+    };
+
     setTimeout(() => {
-      setMessages(prev => [...prev, introMessage]);
-    }, 100);
+      setMessages(prev => [...prev, loadingMessage]);
+
+      // 1초 후 로딩을 제거하고 소개 메시지 표시
+      setTimeout(() => {
+        const introMessage: ChatMessage = {
+          id: `intro-${Date.now()}`,
+          content: INTRO_MESSAGE,
+          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+          isBot: true,
+          isTyping: false,
+          question: "",
+          showLearnMore: true,
+          showInterestOptions: true
+        };
+
+        setMessages(prev => prev.filter(msg => msg.id !== loadingMessage.id).concat(introMessage));
+      }, TIMING.DEFAULT_DELAY);
+    }, TIMING.DEFAULT_DELAY);
   };
 
-  const handleInterestSelect = (option: string, index: number) => {
+  const handleInterestSelect = (option: string, _index: number) => {
     // 사용자 선택 답변 추가
     const userResponse: ChatMessage = {
       id: `interest-answer-${Date.now()}`,
@@ -132,9 +188,9 @@ function BotChatPage() {
       isTyping: false,
       question: ""
     };
-    
+
     setMessages(prev => [...prev, userResponse]);
-    
+
     // 봇 응답 메시지 추가
     setTimeout(() => {
       const botResponse: ChatMessage = {
@@ -145,9 +201,9 @@ function BotChatPage() {
         isTyping: false,
         question: ""
       };
-      
+
       setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+    }, TIMING.DEFAULT_DELAY);
   };
 
   const handleAnswerSelect = (selectedAnswer: string, optionIndex: number) => {
@@ -163,7 +219,7 @@ function BotChatPage() {
 
     setMessages(prev => [...prev, userMessage]);
     setUserAnswers(prev => [...prev, selectedAnswer]);
-    
+
     // 답변한 질문을 추적
     setAnsweredQuestions(prev => new Set([...prev, `question-${currentQuestionIndex}`]));
 
@@ -187,9 +243,21 @@ function BotChatPage() {
       setCurrentQuestionIndex(nextIndex);
       setTimeout(() => {
         showNextQuestion(nextIndex);
-      }, 800);
+      }, TIMING.DEFAULT_DELAY);
     } else {
-      // 모든 질문이 끝났을 때 결과 메시지 표시
+      // 모든 질문이 끝났을 때 로딩 메시지 표시
+      const loadingMessage: ChatMessage = {
+        id: "loading-result",
+        content: "",
+        timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        isBot: true,
+        isTyping: true,
+        question: ""
+      };
+
+      setMessages(prev => [...prev, loadingMessage]);
+
+      // 1초 후 로딩을 제거하고 결과 메시지 표시
       setTimeout(() => {
         const entries = Object.entries(roleScores).map(([k, v]) => [k, v] as const);
         const updatedEntries = (() => {
@@ -198,10 +266,10 @@ function BotChatPage() {
           roles.forEach(r => map.set(r, (map.get(r) ?? 0) + 1));
           return Array.from(map.entries());
         })();
-        const sorted = updatedEntries.sort((a,b) => b[1]-a[1]);
+        const sorted = updatedEntries.sort((a, b) => b[1] - a[1]);
         const topRole = sorted[0][0];
-        
-        // 결과 메시지
+
+        // 로딩 메시지 제거하고 결과 메시지 추가
         const resultMessage: ChatMessage = {
           id: "result",
           content: getResultMessage(topRole),
@@ -212,10 +280,10 @@ function BotChatPage() {
           resultImage: getRoleImage(topRole),
           resultRole: topRole
         };
-        
-        setMessages(prev => [...prev, resultMessage]);
-        
-        // 2초 뒤에 상세 메시지 표시
+
+        setMessages(prev => prev.filter(msg => msg.id !== "loading-result").concat(resultMessage));
+
+        // 1초 뒤에 상세 메시지 표시
         setTimeout(() => {
           const detailMessage: ChatMessage = {
             id: "detail",
@@ -227,8 +295,8 @@ function BotChatPage() {
             showLearnMore: true
           };
           setMessages(prev => [...prev, detailMessage]);
-        }, 3000); // 1초(결과 메시지) + 2초 추가 = 총 3초
-      }, 1000);
+        }, TIMING.DEFAULT_DELAY);
+      }, TIMING.DEFAULT_DELAY);
     }
   };
 
@@ -248,7 +316,7 @@ function BotChatPage() {
         {messages.map((message) => (
           <div key={message.id} className={message.isBot ? "flex justify-start mb-4" : "flex justify-end mb-4"}>
             {message.isBot ? (
-              <ChatBotProfile 
+              <ChatBotProfile
                 message={message.content}
                 messageTitle={message.question}
                 timestamp={message.timestamp}
