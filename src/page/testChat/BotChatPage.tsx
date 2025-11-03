@@ -14,6 +14,8 @@ interface ChatMessage {
   isTyping?: boolean;
   sendType?: string;
   options?: string[];
+  resultImage?: string;
+  resultRole?: string;
 }
 
 function BotChatPage() {
@@ -27,7 +29,7 @@ function BotChatPage() {
     "디자이너": 0,
     "프론트엔드": 0,
     "백엔드": 0,
-    "AI 개발자": 0,
+    "AI 엔지니어": 0,
   });
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -132,15 +134,8 @@ function BotChatPage() {
         showNextQuestion(nextIndex);
       }, 800);
     } else {
-      // 모든 질문이 끝났을 때 콘솔에 결과 출력 및 최다 직군 계산
+      // 모든 질문이 끝났을 때 결과 메시지 표시
       setTimeout(() => {
-        const finalAnswers = [...userAnswers, selectedAnswer];
-        console.log("=== 마스외전 포지션 테스트 결과 ===");
-        console.log("선택한 답변들:");
-        finalAnswers.forEach((answer, index) => {
-          console.log(`질문 ${index + 1}: ${answer}`);
-        });
-        // 최종 직군 점수 및 최다 직군
         const entries = Object.entries(roleScores).map(([k, v]) => [k, v] as const);
         const updatedEntries = (() => {
           const roles = rolesForThisQuestion ? rolesForThisQuestion.split(',').map(r => r.trim()) : [];
@@ -149,9 +144,32 @@ function BotChatPage() {
           return Array.from(map.entries());
         })();
         const sorted = updatedEntries.sort((a,b) => b[1]-a[1]);
-        console.log("직군 점수:", Object.fromEntries(updatedEntries));
-        console.log("가장 적합한 직군:", sorted[0][0], `(점수 ${sorted[0][1]})`);
-        console.log("========================");
+        const topRole = sorted[0][0];
+        
+        // 이미지 파일 이름 매핑
+        const roleImageMap: Record<string, string> = {
+          "기획자": "/planner.png",
+          "디자이너": "/design.png",
+          "프론트엔드": "/frontend.png",
+          "백엔드": "/backend.png",
+          "AI 엔지니어": "/ai.png"
+        };
+        
+        // 결과 메시지
+        const resultMessage: ChatMessage = {
+          id: "result",
+          content: `선택하느라 수고했어!
+너에게 제일 어울리는 건
+${topRole}야.`,
+          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+          isBot: true,
+          isTyping: false,
+          question: "",
+          resultImage: roleImageMap[topRole],
+          resultRole: topRole
+        };
+        
+        setMessages(prev => [...prev, resultMessage]);
       }, 1000);
     }
   };
@@ -181,6 +199,8 @@ function BotChatPage() {
                 options={message.options}
                 onSelect={message.sendType === "select" ? handleAnswerSelect : undefined}
                 isDisabled={message.sendType === "select" && answeredQuestions.has(message.id)}
+                resultImage={message.resultImage}
+                resultRole={message.resultRole}
               />
             ) : (
               <MyChatArea chatContent={message.content} />

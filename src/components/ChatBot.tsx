@@ -13,6 +13,8 @@ interface ChatBotProfileProps {
   onSelect?: (text: string, index: number) => void;
   options?: string[];
   isDisabled?: boolean;
+  resultImage?: string;
+  resultRole?: string;
 }
 
 const defaultOptions = [
@@ -42,6 +44,8 @@ export const ChatBotProfile = ({
   onSelect,
   options = defaultOptions,
   isDisabled = false,
+  resultImage,
+  resultRole,
 }: ChatBotProfileProps) => {
     const [selected, setSelected] = useState<number | null>(null);
     
@@ -79,6 +83,11 @@ export const ChatBotProfile = ({
                     {text}
                   </button>
                 ))}
+              </div>
+            ) : resultImage ? (
+              <div className="flex flex-col items-center gap-3">
+                <img src={resultImage} alt={resultRole} className="w-full max-w-[200px] object-contain" />
+                <div className="font-normal text-base text-center">{formatMessage(message)}</div>
               </div>
             ) : (
                 isTyping ? <TypingWaveDots /> : <div className="font-normal text-base">{formatMessage(message)}</div>
