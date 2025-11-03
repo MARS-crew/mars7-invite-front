@@ -4,8 +4,15 @@ import MyChatArea from "../../components/MyChatArea";
 import { TopBar } from "../../components/TopBar";
 import { Selection } from "../../utils/selectList";
 import InputArea from "../../components/InputArea";
-import { getRoleImage, getRoleDetailMessage, getResultMessage, INTRO_MESSAGE, SELF_INTRO_REQUEST_MESSAGE } from "../../constants/roleMessages";
+import {
+  getRoleImage,
+  getRoleDetailMessage,
+  getResultMessage,
+  INTRO_MESSAGE,
+  SELF_INTRO_REQUEST_MESSAGE,
+} from "../../constants/roleMessages";
 import { TIMING } from "../../constants/chatConstants";
+import { useNavigate } from "react-router-dom";
 
 interface ChatMessage {
   question: string;
@@ -27,20 +34,24 @@ function BotChatPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [_userAnswers, setUserAnswers] = useState<string[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [answeredQuestions, setAnsweredQuestions] = useState<Set<string>>(new Set());
+  const [answeredQuestions, setAnsweredQuestions] = useState<Set<string>>(
+    new Set()
+  );
   const [roleScores, setRoleScores] = useState<Record<string, number>>({
-    "기획자": 0,
-    "디자이너": 0,
-    "프론트엔드": 0,
-    "백엔드": 0,
+    기획자: 0,
+    디자이너: 0,
+    프론트엔드: 0,
+    백엔드: 0,
     "AI 엔지니어": 0,
   });
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   // 스크롤을 하단으로 이동시키는 함수
   const scrollToBottom = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      scrollContainerRef.current.scrollTop =
+        scrollContainerRef.current.scrollHeight;
     }
   };
 
@@ -51,14 +62,18 @@ function BotChatPage() {
       const loadingMessage: ChatMessage = {
         id: "loading-welcome",
         content: "",
-        timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        timestamp: new Date().toLocaleTimeString("ko-KR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
         isBot: true,
         isTyping: true,
-        question: ""
+        question: "",
       };
 
       setMessages([loadingMessage]);
-      
+
       // 1초 후 인사 메시지로 교체
       const timeoutId = setTimeout(() => {
         const welcomeMessage: ChatMessage = {
@@ -70,20 +85,26 @@ function BotChatPage() {
           포지션부터 찾아보자.
           준비됐지?
           부담 없이 하나씩 선택해줘!`,
-          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+          timestamp: new Date().toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }),
           isBot: true,
           isTyping: false,
-          question: ""
+          question: "",
         };
 
-        setMessages(prev => {
+        setMessages((prev) => {
           // 이미 welcome 메시지가 있으면 추가하지 않음
-          if (prev.some(msg => msg.id === "welcome")) {
+          if (prev.some((msg) => msg.id === "welcome")) {
             return prev;
           }
-          return prev.filter(msg => msg.id !== "loading-welcome").concat(welcomeMessage);
+          return prev
+            .filter((msg) => msg.id !== "loading-welcome")
+            .concat(welcomeMessage);
         });
-        
+
         setIsInitialized(true);
       }, TIMING.DEFAULT_DELAY);
 
@@ -93,14 +114,20 @@ function BotChatPage() {
 
   // 첫 번째 질문 표시
   useEffect(() => {
-    const hasWelcomeMessage = messages.some(msg => msg.id === "welcome");
-    const hasQuestion = messages.some(msg => msg.id?.startsWith("question-"));
-    
-    if (isInitialized && currentQuestionIndex === 0 && hasWelcomeMessage && !hasQuestion && messages.length === 1) {
+    const hasWelcomeMessage = messages.some((msg) => msg.id === "welcome");
+    const hasQuestion = messages.some((msg) => msg.id?.startsWith("question-"));
+
+    if (
+      isInitialized &&
+      currentQuestionIndex === 0 &&
+      hasWelcomeMessage &&
+      !hasQuestion &&
+      messages.length === 1
+    ) {
       const timeoutId = setTimeout(() => {
         showNextQuestion(0);
       }, TIMING.DEFAULT_DELAY);
-      
+
       return () => clearTimeout(timeoutId);
     }
   }, [isInitialized, currentQuestionIndex, messages]);
@@ -116,15 +143,19 @@ function BotChatPage() {
       const questionMessage: ChatMessage = {
         id: `question-${index}`,
         content: question.question,
-        timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        timestamp: new Date().toLocaleTimeString("ko-KR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
         isBot: true,
         isTyping: false,
         sendType: "select",
         options: question.options,
-        question: question.question
+        question: question.question,
       };
 
-      setMessages(prev => [...prev, questionMessage]);
+      setMessages((prev) => [...prev, questionMessage]);
     }
   };
 
@@ -133,47 +164,65 @@ function BotChatPage() {
     const userMessage: ChatMessage = {
       id: `learn-more-${Date.now()}`,
       content: "마스외전 알아보기",
-      timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+      timestamp: new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
       isBot: false,
       isTyping: false,
-      question: ""
+      question: "",
     };
 
-    setMessages(prev => prev.map(msg =>
-      msg.id === messageId
-        ? { ...msg, showLearnMore: true, showInterestOptions: false }
-        : msg
-    ));
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === messageId
+          ? { ...msg, showLearnMore: true, showInterestOptions: false }
+          : msg
+      )
+    );
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
 
     // 로딩 메시지 표시
     const loadingMessage: ChatMessage = {
       id: `loading-intro-${Date.now()}`,
       content: "",
-      timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+      timestamp: new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
       isBot: true,
       isTyping: true,
-      question: ""
+      question: "",
     };
 
     setTimeout(() => {
-      setMessages(prev => [...prev, loadingMessage]);
+      setMessages((prev) => [...prev, loadingMessage]);
 
       // 1초 후 로딩을 제거하고 소개 메시지 표시
       setTimeout(() => {
         const introMessage: ChatMessage = {
           id: `intro-${Date.now()}`,
           content: INTRO_MESSAGE,
-          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+          timestamp: new Date().toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }),
           isBot: true,
           isTyping: false,
           question: "",
           showLearnMore: true,
-          showInterestOptions: true
+          showInterestOptions: true,
         };
 
-        setMessages(prev => prev.filter(msg => msg.id !== loadingMessage.id).concat(introMessage));
+        setMessages((prev) =>
+          prev
+            .filter((msg) => msg.id !== loadingMessage.id)
+            .concat(introMessage)
+        );
       }, TIMING.DEFAULT_DELAY);
     }, TIMING.DEFAULT_DELAY);
   };
@@ -183,26 +232,34 @@ function BotChatPage() {
     const userResponse: ChatMessage = {
       id: `interest-answer-${Date.now()}`,
       content: option,
-      timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+      timestamp: new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
       isBot: false,
       isTyping: false,
-      question: ""
+      question: "",
     };
 
-    setMessages(prev => [...prev, userResponse]);
+    setMessages((prev) => [...prev, userResponse]);
 
     // 봇 응답 메시지 추가
     setTimeout(() => {
       const botResponse: ChatMessage = {
         id: `intro-request-${Date.now()}`,
         content: SELF_INTRO_REQUEST_MESSAGE,
-        timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        timestamp: new Date().toLocaleTimeString("ko-KR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
         isBot: true,
         isTyping: false,
-        question: ""
+        question: "",
       };
 
-      setMessages(prev => [...prev, botResponse]);
+      setMessages((prev) => [...prev, botResponse]);
     }, TIMING.DEFAULT_DELAY);
   };
 
@@ -211,25 +268,31 @@ function BotChatPage() {
     const userMessage: ChatMessage = {
       id: `user-answer-${currentQuestionIndex}`,
       content: selectedAnswer,
-      timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
       isBot: false,
       isTyping: false,
-      question: ""
+      question: "",
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setUserAnswers(prev => [...prev, selectedAnswer]);
+    setMessages((prev) => [...prev, userMessage]);
+    setUserAnswers((prev) => [...prev, selectedAnswer]);
 
     // 답변한 질문을 추적
-    setAnsweredQuestions(prev => new Set([...prev, `question-${currentQuestionIndex}`]));
+    setAnsweredQuestions(
+      (prev) => new Set([...prev, `question-${currentQuestionIndex}`])
+    );
 
     // 직군 점수 업데이트
-    const rolesForThisQuestion = (Selection[currentQuestionIndex] as any).roles?.[optionIndex] as string | undefined;
+    const rolesForThisQuestion = (Selection[currentQuestionIndex] as any)
+      .roles?.[optionIndex] as string | undefined;
     if (rolesForThisQuestion) {
-      const roles = rolesForThisQuestion.split(',');
-      setRoleScores(prev => {
+      const roles = rolesForThisQuestion.split(",");
+      setRoleScores((prev) => {
         const next = { ...prev };
-        roles.forEach(role => {
+        roles.forEach((role) => {
           const key = role.trim();
           next[key] = (next[key] ?? 0) + 1;
         });
@@ -249,21 +312,29 @@ function BotChatPage() {
       const loadingMessage: ChatMessage = {
         id: "loading-result",
         content: "",
-        timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        timestamp: new Date().toLocaleTimeString("ko-KR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
         isBot: true,
         isTyping: true,
-        question: ""
+        question: "",
       };
 
-      setMessages(prev => [...prev, loadingMessage]);
+      setMessages((prev) => [...prev, loadingMessage]);
 
       // 1초 후 로딩을 제거하고 결과 메시지 표시
       setTimeout(() => {
-        const entries = Object.entries(roleScores).map(([k, v]) => [k, v] as const);
+        const entries = Object.entries(roleScores).map(
+          ([k, v]) => [k, v] as const
+        );
         const updatedEntries = (() => {
-          const roles = rolesForThisQuestion ? rolesForThisQuestion.split(',').map(r => r.trim()) : [];
+          const roles = rolesForThisQuestion
+            ? rolesForThisQuestion.split(",").map((r) => r.trim())
+            : [];
           const map = new Map(entries);
-          roles.forEach(r => map.set(r, (map.get(r) ?? 0) + 1));
+          roles.forEach((r) => map.set(r, (map.get(r) ?? 0) + 1));
           return Array.from(map.entries());
         })();
         const sorted = updatedEntries.sort((a, b) => b[1] - a[1]);
@@ -273,48 +344,136 @@ function BotChatPage() {
         const resultMessage: ChatMessage = {
           id: "result",
           content: getResultMessage(topRole),
-          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+          timestamp: new Date().toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }),
           isBot: true,
           isTyping: false,
           question: "",
           resultImage: getRoleImage(topRole),
-          resultRole: topRole
+          resultRole: topRole,
         };
 
-        setMessages(prev => prev.filter(msg => msg.id !== "loading-result").concat(resultMessage));
+        setMessages((prev) =>
+          prev
+            .filter((msg) => msg.id !== "loading-result")
+            .concat(resultMessage)
+        );
 
         // 1초 뒤에 상세 메시지 표시
         setTimeout(() => {
           const detailMessage: ChatMessage = {
             id: "detail",
             content: getRoleDetailMessage(topRole),
-            timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            timestamp: new Date().toLocaleTimeString("ko-KR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }),
             isBot: true,
             isTyping: false,
             question: "",
-            showLearnMore: true
+            showLearnMore: true,
           };
-          setMessages(prev => [...prev, detailMessage]);
+          setMessages((prev) => [...prev, detailMessage]);
         }, TIMING.DEFAULT_DELAY);
       }, TIMING.DEFAULT_DELAY);
     }
   };
 
-  const formatted = new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  const formatted = new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   })
     .format(new Date())
-    .replace(/-/g, '.');
+    .replace(/-/g, ".");
+
+  const onSend = (message: string) => {
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      content: message,
+      timestamp: new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
+      isBot: false,
+      isTyping: false,
+      question: "",
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+
+    const typingMessage: ChatMessage = {
+      id: `typing-${Date.now()}`,
+      content: "",
+      timestamp: new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }),
+      isBot: true,
+      isTyping: true,
+      question: "",
+    };
+
+    setMessages((prev) => [...prev, typingMessage]);
+
+    setTimeout(() => {
+      setMessages((prev) =>
+        prev
+          .filter((m) => m.id !== typingMessage.id)
+          .concat({
+            id: `bot-${Date.now()}`,
+            content: getFakeBotReply(),
+            timestamp: new Date().toLocaleTimeString("ko-KR", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }),
+            isBot: true,
+            isTyping: false,
+            question: "",
+          })
+      );
+    }, 1000);
+  };
+
+  const getFakeBotReply = () => {
+    const replies = [
+      "뭘봐",
+      "어쩔티비",
+      "안물어봤음",
+      "안궁금함",
+      "바바바바ㅏ바바밥",
+      "냠ㄴ먀ㅑㅁㄴ먐",
+    ];
+
+    return replies[Math.floor(Math.random() * replies.length)];
+  };
 
   return (
     <div className="h-screen w-full bg-[#FFFFFF] flex flex-col">
       <TopBar />
-      <span className="self-center py-[10px] text-xs text-[#A6A6A6]">{formatted}</span>
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 pt-0 pb-40">
+      <span className="self-center py-[10px] text-xs text-[#A6A6A6]">
+        {formatted}
+      </span>
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto p-4 pt-0 pb-40"
+      >
         {messages.map((message) => (
-          <div key={message.id} className={message.isBot ? "flex justify-start mb-4" : "flex justify-end mb-4"}>
+          <div
+            key={message.id}
+            className={
+              message.isBot
+                ? "flex justify-start mb-4"
+                : "flex justify-end mb-4"
+            }
+          >
             {message.isBot ? (
               <ChatBotProfile
                 message={message.content}
@@ -323,14 +482,26 @@ function BotChatPage() {
                 isTyping={message.isTyping}
                 sendType={message.sendType}
                 options={message.options}
-                onSelect={message.sendType === "select" ? handleAnswerSelect : undefined}
-                isDisabled={message.sendType === "select" && answeredQuestions.has(message.id)}
+                onSelect={
+                  message.sendType === "select" ? handleAnswerSelect : undefined
+                }
+                isDisabled={
+                  message.sendType === "select" &&
+                  answeredQuestions.has(message.id)
+                }
                 resultImage={message.resultImage}
                 resultRole={message.resultRole}
                 showLearnMore={message.showLearnMore}
-                onLearnMoreClick={message.showLearnMore && !message.showInterestOptions ? () => handleLearnMoreClick(message.id) : undefined}
+                onLearnMoreClick={
+                  message.showLearnMore && !message.showInterestOptions
+                    ? () => handleLearnMoreClick(message.id)
+                    : undefined
+                }
                 showInterestOptions={message.showInterestOptions}
-                onInterestSelect={message.showInterestOptions ? handleInterestSelect : undefined}
+                onInterestSelect={
+                  message.showInterestOptions ? handleInterestSelect : undefined
+                }
+                onSkip={() => navigate("/form")}
               />
             ) : (
               <MyChatArea chatContent={message.content} />
@@ -339,7 +510,7 @@ function BotChatPage() {
         ))}
       </div>
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100">
-        <InputArea />
+        <InputArea onSend={onSend} />
       </div>
     </div>
   );
