@@ -15,6 +15,7 @@ interface ChatBotProfileProps {
   isDisabled?: boolean;
   resultImage?: string;
   resultRole?: string;
+  showLearnMore?: boolean;
 }
 
 const defaultOptions = [
@@ -46,6 +47,7 @@ export const ChatBotProfile = ({
   isDisabled = false,
   resultImage,
   resultRole,
+  showLearnMore = false,
 }: ChatBotProfileProps) => {
     const [selected, setSelected] = useState<number | null>(null);
     
@@ -88,6 +90,14 @@ export const ChatBotProfile = ({
               <div className="flex flex-col items-center gap-3">
                 <img src={resultImage} alt={resultRole} className="w-full max-w-[200px] object-contain" />
                 <div className="font-normal text-base text-center">{formatMessage(message)}</div>
+              </div>
+            ) : showLearnMore ? (
+              <div className="flex flex-col gap-3">
+                <div className="font-normal text-base">{formatMessage(message)}</div>
+                <button className="flex items-center justify-center gap-2 bg-[#4173FF] text-white px-4 h-12 rounded-lg hover:bg-[#4173FF]/90 transition-colors">
+                  <span className="text-sm font-medium">마스외전 알아보기</span>
+                  <img src="/search.svg" alt="search" className="w-3.5 h-3.5" />
+                </button>
               </div>
             ) : (
                 isTyping ? <TypingWaveDots /> : <div className="font-normal text-base">{formatMessage(message)}</div>

@@ -4,6 +4,7 @@ import MyChatArea from "../../components/MyChatArea";
 import { TopBar } from "../../components/TopBar";
 import { Selection } from "../../utils/selectList";
 import InputArea from "../../components/InputArea";
+import { getRoleImage, getRoleDetailMessage, getResultMessage } from "../../utils/roleMessages";
 
 interface ChatMessage {
   question: string;
@@ -16,6 +17,8 @@ interface ChatMessage {
   options?: string[];
   resultImage?: string;
   resultRole?: string;
+  showLearnMore?: boolean;
+  showInterestOptions?: boolean;
 }
 
 function BotChatPage() {
@@ -146,30 +149,33 @@ function BotChatPage() {
         const sorted = updatedEntries.sort((a,b) => b[1]-a[1]);
         const topRole = sorted[0][0];
         
-        // 이미지 파일 이름 매핑
-        const roleImageMap: Record<string, string> = {
-          "기획자": "/planner.png",
-          "디자이너": "/design.png",
-          "프론트엔드": "/frontend.png",
-          "백엔드": "/backend.png",
-          "AI 엔지니어": "/ai.png"
-        };
-        
         // 결과 메시지
         const resultMessage: ChatMessage = {
           id: "result",
-          content: `선택하느라 수고했어!
-너에게 제일 어울리는 건
-${topRole}야.`,
+          content: getResultMessage(topRole),
           timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
           isBot: true,
           isTyping: false,
           question: "",
-          resultImage: roleImageMap[topRole],
+          resultImage: getRoleImage(topRole),
           resultRole: topRole
         };
         
         setMessages(prev => [...prev, resultMessage]);
+        
+        // 2초 뒤에 상세 메시지 표시
+        setTimeout(() => {
+          const detailMessage: ChatMessage = {
+            id: "detail",
+            content: getRoleDetailMessage(topRole),
+            timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            isBot: true,
+            isTyping: false,
+            question: "",
+            showLearnMore: true
+          };
+          setMessages(prev => [...prev, detailMessage]);
+        }, 3000); // 1초(결과 메시지) + 2초 추가 = 총 3초
       }, 1000);
     }
   };
@@ -201,6 +207,7 @@ ${topRole}야.`,
                 isDisabled={message.sendType === "select" && answeredQuestions.has(message.id)}
                 resultImage={message.resultImage}
                 resultRole={message.resultRole}
+                showLearnMore={message.showLearnMore}
               />
             ) : (
               <MyChatArea chatContent={message.content} />
