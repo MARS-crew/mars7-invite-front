@@ -1,9 +1,12 @@
 interface FormInputProps {
   width: string;
   text: string;
+  value: string | number;
+  name: string;
+  onChange: (e: any) => void;
 }
 
-const FormInput = ({ width, text }: FormInputProps) => {
+const FormInput = ({ width, text, value, name, onChange }: FormInputProps) => {
   return (
     <div className="mb-[18px]">
       <div className="flex items-end mb-2">
@@ -13,6 +16,9 @@ const FormInput = ({ width, text }: FormInputProps) => {
       <input
         style={{ width: width }}
         className={`h-[54px] border border-[#dddddd] p-4 rounded-[10px] bg-white`}
+        value={value}
+        onChange={onChange}
+        name={name}
       />
     </div>
   );

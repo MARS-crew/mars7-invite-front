@@ -1,6 +1,12 @@
 import { useState } from "react";
 import PositionChip from "./PositionChip";
 
+// interface PositionChipProps {
+//   value: string;
+//   name: string;
+//   onChange: (e: any) => void;
+// }
+
 const PositionSelect = () => {
   const position = [
     "프론트엔드",
