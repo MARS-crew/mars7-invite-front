@@ -78,3 +78,14 @@ export const getResultMessage = (role: string): string => {
 ${role}야.`;
 };
 
+// 마스외전 소개 메시지
+export const INTRO_MESSAGE = `마스외전은 개발자, 기획자, 디자이너 등 다양한 사람들이 함께 모여 성장하는 곳!
+
+서로 배우고 협력하면서 스터디는 물론, 내부 프로젝트와 외주 프로젝트까지 함께 도전하고 있어!.
+
+어때? 관심이 좀 생겼니?`;
+
+// 자기소개 요청 메시지
+export const SELF_INTRO_REQUEST_MESSAGE = `좋았어! 이제 네 얘기도 좀 들려주라
+간단하게 자기소개 해줄 수 있어?`;
+

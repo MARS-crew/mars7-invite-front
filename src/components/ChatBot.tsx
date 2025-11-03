@@ -16,6 +16,9 @@ interface ChatBotProfileProps {
   resultImage?: string;
   resultRole?: string;
   showLearnMore?: boolean;
+  onLearnMoreClick?: () => void;
+  showInterestOptions?: boolean;
+  onInterestSelect?: (option: string, index: number) => void;
 }
 
 const defaultOptions = [
@@ -48,8 +51,12 @@ export const ChatBotProfile = ({
   resultImage,
   resultRole,
   showLearnMore = false,
+  onLearnMoreClick,
+  showInterestOptions = false,
+  onInterestSelect,
 }: ChatBotProfileProps) => {
     const [selected, setSelected] = useState<number | null>(null);
+    const [selectedInterest, setSelectedInterest] = useState<number | null>(null);
     
   return (
     <div className={`flex ${className}`}>
@@ -94,10 +101,40 @@ export const ChatBotProfile = ({
             ) : showLearnMore ? (
               <div className="flex flex-col gap-3">
                 <div className="font-normal text-base">{formatMessage(message)}</div>
-                <button className="flex items-center justify-center gap-2 bg-[#4173FF] text-white px-4 h-12 rounded-lg hover:bg-[#4173FF]/90 transition-colors">
-                  <span className="text-sm font-medium">마스외전 알아보기</span>
-                  <img src="/search.svg" alt="search" className="w-3.5 h-3.5" />
-                </button>
+                {showInterestOptions ? (
+                  <div className="flex gap-3 w-full max-w-md">
+                    {["응!", "겠냐?"].map((text, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          if (selectedInterest === null) {
+                            setSelectedInterest(idx);
+                            onInterestSelect?.(text, idx);
+                          }
+                        }}
+                        disabled={selectedInterest !== null}
+                        className={`flex-1 border rounded-lg h-12 flex items-center justify-center text-sm transition-all duration-200 bg-white text-black
+                          ${
+                            selectedInterest === idx
+                              ? "border-[#4173FF]"
+                              : selectedInterest !== null
+                              ? "border-[#4173FF]/[0.56] opacity-50 cursor-not-allowed"
+                              : "border-[#4173FF]/[0.56]"
+                          }`}
+                      >
+                        {text}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <button 
+                    onClick={onLearnMoreClick}
+                    className="flex items-center justify-center gap-2 bg-[#4173FF] text-white px-4 h-12 rounded-lg hover:bg-[#4173FF]/90 transition-colors"
+                  >
+                    <span className="text-sm font-medium">마스외전 알아보기</span>
+                    <img src="/search.svg" alt="search" className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             ) : (
                 isTyping ? <TypingWaveDots /> : <div className="font-normal text-base">{formatMessage(message)}</div>

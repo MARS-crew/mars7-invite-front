@@ -4,7 +4,7 @@ import MyChatArea from "../../components/MyChatArea";
 import { TopBar } from "../../components/TopBar";
 import { Selection } from "../../utils/selectList";
 import InputArea from "../../components/InputArea";
-import { getRoleImage, getRoleDetailMessage, getResultMessage } from "../../utils/roleMessages";
+import { getRoleImage, getRoleDetailMessage, getResultMessage, INTRO_MESSAGE, SELF_INTRO_REQUEST_MESSAGE } from "../../utils/roleMessages";
 
 interface ChatMessage {
   question: string;
@@ -96,6 +96,58 @@ function BotChatPage() {
       
       setMessages(prev => [...prev, questionMessage]);
     }
+  };
+
+  const handleLearnMoreClick = (messageId: string) => {
+    // 마스외전 소개 메시지
+    const introMessage: ChatMessage = {
+      id: `intro-${Date.now()}`,
+      content: INTRO_MESSAGE,
+      timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+      isBot: true,
+      isTyping: false,
+      question: "",
+      showLearnMore: true,
+      showInterestOptions: true
+    };
+    
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId 
+        ? { ...msg, showLearnMore: true, showInterestOptions: false }
+        : msg
+    ));
+    
+    setTimeout(() => {
+      setMessages(prev => [...prev, introMessage]);
+    }, 100);
+  };
+
+  const handleInterestSelect = (option: string, index: number) => {
+    // 사용자 선택 답변 추가
+    const userResponse: ChatMessage = {
+      id: `interest-answer-${Date.now()}`,
+      content: option,
+      timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+      isBot: false,
+      isTyping: false,
+      question: ""
+    };
+    
+    setMessages(prev => [...prev, userResponse]);
+    
+    // 봇 응답 메시지 추가
+    setTimeout(() => {
+      const botResponse: ChatMessage = {
+        id: `intro-request-${Date.now()}`,
+        content: SELF_INTRO_REQUEST_MESSAGE,
+        timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        isBot: true,
+        isTyping: false,
+        question: ""
+      };
+      
+      setMessages(prev => [...prev, botResponse]);
+    }, 1000);
   };
 
   const handleAnswerSelect = (selectedAnswer: string, optionIndex: number) => {
@@ -208,6 +260,9 @@ function BotChatPage() {
                 resultImage={message.resultImage}
                 resultRole={message.resultRole}
                 showLearnMore={message.showLearnMore}
+                onLearnMoreClick={message.showLearnMore && !message.showInterestOptions ? () => handleLearnMoreClick(message.id) : undefined}
+                showInterestOptions={message.showInterestOptions}
+                onInterestSelect={message.showInterestOptions ? handleInterestSelect : undefined}
               />
             ) : (
               <MyChatArea chatContent={message.content} />
