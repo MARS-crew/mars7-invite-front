@@ -13,6 +13,7 @@ import {
 } from "../../constants/roleMessages";
 import { TIMING } from "../../constants/chatConstants";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface ChatMessage {
   question: string;
@@ -46,6 +47,7 @@ function BotChatPage() {
   });
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_AI_API_URL;
 
   // 스크롤을 하단으로 이동시키는 함수
   const scrollToBottom = () => {
@@ -244,6 +246,15 @@ function BotChatPage() {
 
     setMessages((prev) => [...prev, userResponse]);
 
+    try {
+      axios.post(`${apiUrl}/chat/start`).then((res) => {
+        console.log(res.data);
+        localStorage.setItem("sessionId", res.data.session_id);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
     // 봇 응답 메시지 추가
     setTimeout(() => {
       const botResponse: ChatMessage = {
@@ -392,6 +403,7 @@ function BotChatPage() {
     .replace(/-/g, ".");
 
   const onSend = (message: string) => {
+    const session_id = localStorage.getItem("sessionId");
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       content: message,
@@ -422,37 +434,40 @@ function BotChatPage() {
 
     setMessages((prev) => [...prev, typingMessage]);
 
-    setTimeout(() => {
-      setMessages((prev) =>
-        prev
-          .filter((m) => m.id !== typingMessage.id)
-          .concat({
-            id: `bot-${Date.now()}`,
-            content: getFakeBotReply(),
-            timestamp: new Date().toLocaleTimeString("ko-KR", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            }),
-            isBot: true,
-            isTyping: false,
-            question: "",
-          })
-      );
-    }, 1000);
-  };
+    try {
+      axios
+        .post(`${apiUrl}/chat/send`, {
+          session_id: session_id,
+          message: message,
+        })
+        .then((res) => {
+          console.log(res.data.response_message);
 
-  const getFakeBotReply = () => {
-    const replies = [
-      "뭘봐",
-      "어쩔티비",
-      "안물어봤음",
-      "안궁금함",
-      "바바바바ㅏ바바밥",
-      "냠ㄴ먀ㅑㅁㄴ먐",
-    ];
-
-    return replies[Math.floor(Math.random() * replies.length)];
+          setTimeout(() => {
+            setMessages((prev) =>
+              prev
+                .filter((m) => m.id !== typingMessage.id)
+                .concat({
+                  id: `bot-${Date.now()}`,
+                  content: res.data.response_message,
+                  timestamp: new Date().toLocaleTimeString("ko-KR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  }),
+                  isBot: true,
+                  isTyping: false,
+                  question: "",
+                })
+            );
+          }, 1000);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
