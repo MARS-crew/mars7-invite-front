@@ -29,7 +29,7 @@ export default function InputArea({ onSend, status }: InputAreaProps) {
         />
         <button
           onClick={handleSend}
-          className="h-14 w-14 bg-[#4173FF] rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
+          className="h-[56px] w-[56px] bg-[#4173FF] rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
         >
           <img src={Send} className="h-8 w-8" alt="Send" />
         </button>
