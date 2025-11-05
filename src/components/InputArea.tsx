@@ -2,10 +2,11 @@ import { useState } from "react";
 import Send from "../assets/send.png";
 
 interface InputAreaProps {
+  status: boolean;
   onSend: (text: string) => void;
 }
 
-export default function InputArea({ onSend }: InputAreaProps) {
+export default function InputArea({ onSend, status }: InputAreaProps) {
   const [text, setText] = useState("");
 
   const handleSend = () => {
@@ -24,6 +25,7 @@ export default function InputArea({ onSend }: InputAreaProps) {
           placeholder="마스외전에 관해서 물어보세요."
           value={text}
           onChange={(e) => setText(e.target.value)}
+          disabled={status}
         />
         <button
           onClick={handleSend}

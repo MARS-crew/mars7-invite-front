@@ -5,7 +5,7 @@ import TopBar from "../../components/form/TopBar";
 import PrivacyConsent from "../../components/form/PrivacyConsent";
 import { useNavigate } from "react-router-dom";
 import LongButton from "../../components/button/LongButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { formData } from "../../types/form";
 import axios from "axios";
 
@@ -20,6 +20,7 @@ const ApplicationForm = () => {
     privacyAgreement: false,
   });
   const apiUrl = import.meta.env.VITE_API_URL;
+  const apiAiUrl = import.meta.env.VITE_AI_API_URL;
   const navigate = useNavigate();
 
   const onChangeHandler = (e: any) => {
@@ -80,6 +81,27 @@ const ApplicationForm = () => {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("sessionId") != null) {
+      try {
+        axios
+          .post(`${apiAiUrl}/chat/send`, {
+            session_id: localStorage.getItem("sessionId"),
+            message: "종료",
+          })
+          .then((res) => {
+            console.log(res.data);
+            localStorage.removeItem("sessionId");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }, []);
 
   return (
     <div>

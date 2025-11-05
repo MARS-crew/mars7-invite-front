@@ -35,6 +35,8 @@ function BotChatPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [_userAnswers, setUserAnswers] = useState<string[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [endBtn, setEndBtn] = useState(false);
+  const [chatState, setChatState] = useState();
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<string>>(
     new Set()
   );
@@ -112,7 +114,7 @@ function BotChatPage() {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [isInitialized]);
+  }, [isInitialized, endBtn]);
 
   // 첫 번째 질문 표시
   useEffect(() => {
@@ -250,6 +252,7 @@ function BotChatPage() {
       axios.post(`${apiUrl}/chat/start`).then((res) => {
         console.log(res.data);
         localStorage.setItem("sessionId", res.data.session_id);
+        setEndBtn(true);
       });
     } catch (err) {
       console.log(err);
@@ -442,6 +445,7 @@ function BotChatPage() {
         })
         .then((res) => {
           console.log(res.data.response_message);
+          setChatState(res.data.next_step);
 
           setTimeout(() => {
             setMessages((prev) =>
@@ -470,10 +474,48 @@ function BotChatPage() {
     }
   };
 
+  const handleEndChat = async () => {
+    const session_id = localStorage.getItem("sessionId");
+    if (!session_id) return;
+
+    try {
+      let skipCount = 0;
+      if (chatState === "position") skipCount = 2;
+      else if (chatState === "process_initial_motivation") skipCount = 1;
+
+      let currentState = chatState;
+
+      for (let i = 0; i < skipCount; i++) {
+        const res = await axios.post(`${apiUrl}/chat/send`, {
+          session_id,
+          message: "스킵",
+        });
+
+        console.log(`스킵 ${i + 1}회차 완료`, res.data);
+        currentState = res.data.next_step;
+        setChatState(res.data.next_step);
+
+        if (currentState === "qa_session") break;
+      }
+
+      if (currentState === "qa_session") {
+        const endRes = await axios.post(`${apiUrl}/chat/send`, {
+          session_id,
+          message: "종료",
+        });
+        console.log("종료 완료", endRes.data);
+      }
+
+      navigate("/form");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="h-screen w-full bg-[#FFFFFF] flex flex-col">
       <TopBar />
-      <span className="self-center py-[10px] text-xs text-[#A6A6A6]">
+      <span className="self-center py-2.5 text-xs text-[#A6A6A6]">
         {formatted}
       </span>
       <div
@@ -524,9 +566,24 @@ function BotChatPage() {
           </div>
         ))}
       </div>
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100">
-        <InputArea onSend={onSend} />
+
+      <div
+        className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 ${
+          endBtn && "shadow-[0_-40px_90px_rgba(65,115,255,0.15)]"
+        }`}
+      >
+        <InputArea status={endBtn ? false : true} onSend={onSend} />
       </div>
+      {endBtn && (
+        <div className="fixed bottom-36 w-full flex items-center justify-center">
+          <button
+            onClick={handleEndChat}
+            className="flex items-center justify-center bg-white gap-2 text-black border border-[#4173FF] px-4 w-[70%] h-12 mt-[25px] rounded-3xl transition-colors"
+          >
+            대화 종료하기
+          </button>
+        </div>
+      )}
     </div>
   );
 }
