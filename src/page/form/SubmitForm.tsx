@@ -5,6 +5,7 @@ import LongButton from "../../components/button/LongButton";
 
 const SubmitForm = () => {
   const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center justify-center h-screen px-4">
       <div className="rounded-full bg-[#4173FF] w-[49px] h-[49px] flex items-center justify-center">
@@ -40,7 +41,7 @@ const SubmitForm = () => {
       </div>
       <LongButton
         text="처음으로 돌아가기"
-        onClickHandler={() => navigate("/chat")}
+        onClickHandler={() => navigate("/")}
       />
     </div>
   );
