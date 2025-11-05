@@ -1,13 +1,15 @@
 import { useState } from "react";
 import PositionChip from "./PositionChip";
 
-// interface PositionChipProps {
-//   value: string;
-//   name: string;
-//   onChange: (e: any) => void;
-// }
+interface PositionChipProps {
+  selectPosition: string[];
+  setSelectPosition: (value: string[]) => void;
+}
 
-const PositionSelect = () => {
+const PositionSelect = ({
+  selectPosition,
+  setSelectPosition,
+}: PositionChipProps) => {
   const position = [
     "프론트엔드",
     "백엔드",
@@ -15,7 +17,6 @@ const PositionSelect = () => {
     "기획자",
     "AI 엔지니어",
   ];
-  const [selectPosition, setSelectPosition] = useState<string[]>([]);
 
   return (
     <div className="mb-[18px]">

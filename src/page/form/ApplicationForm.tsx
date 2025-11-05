@@ -8,6 +8,7 @@ import LongButton from "../../components/button/LongButton";
 import { useEffect, useState } from "react";
 import type { formData } from "../../types/form";
 import axios from "axios";
+import { positionMapToEng, positionMapToKor } from "../../utils/position";
 
 const ApplicationForm = () => {
   const [data, setData] = useState<formData>({
@@ -64,12 +65,17 @@ const ApplicationForm = () => {
       alert("개인정보 수집 및 이용에 동의해주세요.");
       return;
     }
+    const positionsInEng = data.position.map((p) => positionMapToKor[p]);
     try {
+      const payload = { ...data, positions: positionsInEng };
+
       axios
-        .post(`${apiUrl}/user`, data)
+        .post(`${apiUrl}/user`, payload)
         .then((res) => {
           if (res.status === 200) {
             console.log("데이터 전송 성공:", res);
+            localStorage.setItem("name", payload.name);
+            localStorage.setItem("phoneNumber", payload.phoneNumber);
             navigate("/submit");
           }
         })
@@ -92,15 +98,18 @@ const ApplicationForm = () => {
           })
           .then((res) => {
             console.log(res.data);
+
+            const data = res.data.profile_data;
             setData({
-              name: res.data.profile_data.name || "",
-              department: res.data.profile_data.department || "",
-              age: res.data.profile_data.age || "",
+              name: data.name || "",
+              department: data.department || "",
+              age: data.age || "",
               phoneNumber: "",
-              position: [
-                res.data.profile_data.positions.map((item: string) => item),
-              ],
-              motivation: res.data.profile_data.motivation || "",
+              position: data.positions
+                ? data.positions.map((p: string) => positionMapToKor[p])
+                : [],
+
+              motivation: data.motivation || "",
               privacyAgreement: false,
             });
             localStorage.removeItem("sessionId");
@@ -148,7 +157,10 @@ const ApplicationForm = () => {
           width="100%"
           text="전화번호"
         />
-        <PositionSelect />
+        <PositionSelect
+          selectPosition={data.position}
+          setSelectPosition={(value) => setData({ ...data, position: value })}
+        />
         <TextArea
           text={data.motivation}
           name="motivation"
