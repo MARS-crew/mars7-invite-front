@@ -15,7 +15,7 @@ const ApplicationForm = () => {
     department: "",
     age: 0,
     phoneNumber: "",
-    position: "FRONTEND",
+    position: [],
     motivation: "",
     privacyAgreement: false,
   });
@@ -55,7 +55,7 @@ const ApplicationForm = () => {
       alert("전화번호를 입력해주세요.");
       return;
     }
-    if (!data.position.trim()) {
+    if (!data.position.length) {
       alert("포지션을 선택해주세요.");
       return;
     }
@@ -92,6 +92,17 @@ const ApplicationForm = () => {
           })
           .then((res) => {
             console.log(res.data);
+            setData({
+              name: res.data.profile_data.name || "",
+              department: res.data.profile_data.department || "",
+              age: res.data.profile_data.age || "",
+              phoneNumber: "",
+              position: [
+                res.data.profile_data.positions.map((item: string) => item),
+              ],
+              motivation: res.data.profile_data.motivation || "",
+              privacyAgreement: false,
+            });
             localStorage.removeItem("sessionId");
           })
           .catch((err) => {
@@ -101,6 +112,8 @@ const ApplicationForm = () => {
         console.log(err);
       }
     }
+
+    console.log(data);
   }, []);
 
   return (
