@@ -72,7 +72,7 @@ const ApplicationForm = () => {
       axios
         .post(`${apiUrl}/user`, payload)
         .then((res) => {
-          if (res.status === 200) {
+          if (res.status === 201) {
             console.log("데이터 전송 성공:", res);
             localStorage.setItem("name", payload.name);
             localStorage.setItem("phoneNumber", payload.phoneNumber);
