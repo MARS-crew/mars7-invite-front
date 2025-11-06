@@ -1,4 +1,3 @@
-import { useState } from "react";
 import PositionChip from "./PositionChip";
 
 interface PositionChipProps {

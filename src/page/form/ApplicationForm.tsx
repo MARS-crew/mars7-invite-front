@@ -16,7 +16,7 @@ const ApplicationForm = () => {
     department: "",
     age: 0,
     phoneNumber: "",
-    position: [],
+    positions: [],
     motivation: "",
     privacyAgreement: false,
   });
@@ -56,7 +56,7 @@ const ApplicationForm = () => {
       alert("전화번호를 입력해주세요.");
       return;
     }
-    if (!data.position.length) {
+    if (!data.positions.length) {
       alert("포지션을 선택해주세요.");
       return;
     }
@@ -65,7 +65,7 @@ const ApplicationForm = () => {
       alert("개인정보 수집 및 이용에 동의해주세요.");
       return;
     }
-    const positionsInEng = data.position.map((p) => positionMapToKor[p]);
+    const positionsInEng = data.positions.map((p) => positionMapToEng[p]);
     try {
       const payload = { ...data, positions: positionsInEng };
 
@@ -105,7 +105,7 @@ const ApplicationForm = () => {
               department: data.department || "",
               age: data.age || "",
               phoneNumber: "",
-              position: data.positions
+              positions: data.positions
                 ? data.positions.map((p: string) => positionMapToKor[p])
                 : [],
 
@@ -158,8 +158,8 @@ const ApplicationForm = () => {
           text="전화번호"
         />
         <PositionSelect
-          selectPosition={data.position}
-          setSelectPosition={(value) => setData({ ...data, position: value })}
+          selectPosition={data.positions}
+          setSelectPosition={(value) => setData({ ...data, positions: value })}
         />
         <TextArea
           text={data.motivation}

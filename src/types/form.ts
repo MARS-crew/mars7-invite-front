@@ -1,7 +1,7 @@
 export interface formData {
   name: string;
   department: string;
-  position: string[];
+  positions: string[];
   age: number;
   motivation: string;
   phoneNumber: string;
