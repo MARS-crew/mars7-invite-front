@@ -65,9 +65,17 @@ const ApplicationForm = () => {
       alert("개인정보 수집 및 이용에 동의해주세요.");
       return;
     }
+
+    const cleanPhoneNumber = data.phoneNumber.replace(/-/g, "");
+
     const positionsInEng = data.positions.map((p) => positionMapToEng[p]);
+
     try {
-      const payload = { ...data, positions: positionsInEng };
+      const payload = {
+        ...data,
+        positions: positionsInEng,
+        phoneNumber: cleanPhoneNumber,
+      };
 
       axios
         .post(`${apiUrl}/user`, payload)
