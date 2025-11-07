@@ -6,6 +6,16 @@ import LongButton from "../../components/button/LongButton";
 const SubmitForm = () => {
   const navigate = useNavigate();
 
+  const formatPhoneNumber = (phone: string | null) => {
+    if (!phone) return "";
+    const clean = phone.replace(/\D/g, "");
+    if (clean.length === 11)
+      return `${clean.slice(0, 3)} ${clean.slice(3, 7)} ${clean.slice(7)}`;
+    else if (clean.length === 10)
+      return `${clean.slice(0, 3)} ${clean.slice(3, 6)} ${clean.slice(6)}`;
+    else return phone;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-screen px-4">
       <div className="rounded-full bg-[#4173FF] w-[49px] h-[49px] flex items-center justify-center">
@@ -36,7 +46,7 @@ const SubmitForm = () => {
           <div className="h-[54px] flex justify-between px-4 items-center">
             <div className="font-bold text-[#626262]">전화번호</div>
             <div className="font-semibold">
-              {localStorage.getItem("phoneNumber")}
+              {formatPhoneNumber(localStorage.getItem("phoneNumber"))}
             </div>
           </div>
         </div>
